@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf0EFelWsSVkc9tDJmIaHUV4R6mB7u59k&libraries=places">
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+    <form data-bind="submit: search">
+      <input data-bind="value: query"></input>
+      <button type="submit">Search</button>
+    </form>
+    <ul class="searchResults" data-bind="foreach: {data: searchResults, as: 'result'}">
+      <li class="result" data-bind="click: function() { $root.goToResult(result); $root.displayInfo($root.chosenResult()); $root.twitterSearch() }, css: {chosenResult: $data === $root.chosenResult()}, attr: { id: result.id }">
+        <h4 data-bind="text: result.name"></h4>
+        <p data-bind="text: $root.splitAddress(result.formatted_address)[0]"></p>
+        <p data-bind="text: $root.splitAddress(result.formatted_address)[1]"></p>
+        <!-- ko if: result.photos != undefined -->
+        <img data-bind="attr: {src: result.photos[0].getUrl({maxWidth: 200, maxHeight: 100})}">
+        <!-- /ko -->
+      </li>
+  </ul>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script type="text/javascript" src="js/knockout.min.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+
+p {
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
+input {
+  z-index: 100;
+  position: fixed;
+  left: 50px;
+  top: 50px;
+}
+
+h1 {
+  z-index: 100;
+  position: fixed;
+  left: 50px;
+  top: 200px;
+}
+
+h4 {
+  padding: 0;
+  margin: 0;
+}
+
+button {
+  z-index: 100;
+  position: fixed;
+  left: 50px;
+  top: 100px;
+}
+
+.searchResults {
+  z-index: 100;
+  position: fixed;
+  right: 50px;
+  top: 50px;
+  background: white;
+  height: 300px;
+  overflow-y: scroll;
+  padding-left: 0;
+}
+
+.result {
+  padding: 5px;
+}
+
+.result:hover {
+  background: #ddd;
+}
+
+.chosenResult {
+  border: 3px solid black;
+}
