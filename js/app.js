@@ -397,8 +397,8 @@ function appViewModel() {
             if (status == google.maps.places.PlacesServiceStatus.OK) {
                 if (details.website) {
                     // Add a link to the location's website in the place's name.
-                    locName = '<h4><a href=' + details.website + '>' +
-                        place.name + '</a></h4>';
+                    locName = '<h4><a target="_blank" href=' + details.website +
+                        '>' + place.name + '</a></h4>';
                 }
                 if (details.formatted_phone_number) {
                     locPhone = '<p>' + details.formatted_phone_number + '</p>';
