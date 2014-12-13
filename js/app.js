@@ -379,7 +379,6 @@ function appViewModel() {
         } else {
             self.displayingList(true);
         }
-        console.log(self.listToggleWidth());
     };
 
     /*
