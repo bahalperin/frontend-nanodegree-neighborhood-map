@@ -190,7 +190,7 @@ function appViewModel() {
             var locationIds = [];
             // Strip out all non-alphanumeric characters and whitespace.  This
             // makes it easy to compare if the place's name matches the name(s)
-            // Instagram has for it.  
+            // Instagram has for it.
             var checkName = place.name.toLowerCase().replace(/[^\w]/gi, '');
             var compareName;
             results.data.forEach(function (result) {
@@ -304,7 +304,7 @@ function appViewModel() {
             return place.isInFilteredList();
         });
     });
-    
+
     // Currently selected location.
     self.chosenPlace = ko.observable();
 
@@ -347,15 +347,19 @@ function appViewModel() {
     // Sets which place is the chosenPlace, makes its marker bounce, and
     // displays its infowindow.
     self.selectPlace = function (place) {
-        self.filteredPlaces().forEach(function (result) {
-            result.marker.setAnimation(null);
-        });
-        self.chosenPlace(place);
-        self.chosenPhotoIndex(0);
-        place.marker.setAnimation(google.maps.Animation.BOUNCE);
-        self.displayInfo(place);
+        if (place === self.chosenPlace()) {
+            self.displayInfo(place);
+        } else {
+            self.filteredPlaces().forEach(function (result) {
+                result.marker.setAnimation(null);
+            });
+            self.chosenPlace(place);
+            self.chosenPhotoIndex(0);
+            place.marker.setAnimation(google.maps.Animation.BOUNCE);
+            self.displayInfo(place);
+        }
     };
-    
+
     // Boolean to determine whether or not to show the list view.
     self.displayingList = ko.observable(true);
 
@@ -377,7 +381,7 @@ function appViewModel() {
         }
         console.log(self.listToggleWidth());
     };
-    
+
     /*
      * Executes a getDetails request for the selected place and displays the
      * infowindow for the place with the resulting information.
@@ -414,7 +418,7 @@ function appViewModel() {
                     details.opening_hours.weekday_text) {
                     openHours = details.opening_hours.weekday_text[today];
                     openHours = openHours.replace(dateMap[today] + ':',
-                                                  "Today's Hours:");
+                        "Today's Hours:");
                     locOpenHours = '<p>' + openHours + '</p>';
                 }
             }
@@ -425,23 +429,27 @@ function appViewModel() {
             map.panTo(place.marker.position);
         })
     };
-    
+
     // Boolean to determine whether or not to show Instagram photo gallery.
     self.viewingPhotos = ko.observable(false);
-    
+
     // If viewing photo gallery, close it.  Otherwise open the photo gallery.
     // Map should not be draggable while viewing photos.
     self.togglePhotoDisplay = function () {
         if (self.viewingPhotos()) {
             self.viewingPhotos(false);
-            map.setOptions({draggable: true});
+            map.setOptions({
+                draggable: true
+            });
         } else {
             self.viewingPhotos(true);
-            map.setOptions({draggable: false});
+            map.setOptions({
+                draggable: false
+            });
         }
         resizePhoto();
     };
-    
+
     // An index of chosenPlace's instagram array.  The photo at this index
     // will be displayed on screen.
     self.chosenPhotoIndex = ko.observable(0);
@@ -483,7 +491,7 @@ function appViewModel() {
     // Change the chosenPhoto to the next photo in the chosenPlace's instagram
     // array.  If at the end of the array, start back at the beginning.
     self.nextPhoto = function () {
-        if (self.chosenPhotoIndex() !== 
+        if (self.chosenPhotoIndex() !==
             self.chosenPlace().instagrams().length - 1) {
             self.chosenPhotoIndex(self.chosenPhotoIndex() + 1);
         } else {
@@ -491,7 +499,7 @@ function appViewModel() {
         }
     };
 
-    // Change the chosenPhoto to the previous photo in the chosenPlace's 
+    // Change the chosenPhoto to the previous photo in the chosenPlace's
     //instagram array.  If at the beginning of the array, go to the end.
     self.prevPhoto = function () {
         if (self.chosenPhotoIndex() !== 0) {
@@ -500,7 +508,7 @@ function appViewModel() {
             self.chosenPhotoIndex(self.chosenPlace().instagrams().length - 1);
         }
     };
-    
+
     // Height and width value for Instagram photo being displayed.
     self.photoDimensionValue = ko.observable();
 
@@ -530,13 +538,13 @@ function appViewModel() {
         }
         return '';
     });
-    
+
     initialize();
 
     // When the window is resized, update the size of the displayed photo and
     // make sure the map displays all markers.
     window.addEventListener('resize', function (e) {
-        map.fitBounds(bounds); 
+        map.fitBounds(bounds);
         resizePhoto();
     });
 
@@ -552,8 +560,15 @@ function appViewModel() {
             }
         }
     });
+    
+    // When infowindow is closed, stop the marker's bouncing animation and
+    // deselect the place as chosenPlace.
+    google.maps.event.addListener(infowindow,'closeclick',function(){
+        self.chosenPlace().marker.setAnimation(null);
+        self.chosenPlace(null);
+    });
 
-    // When the page loads, if the width is less than 650px, hide the list view.
+    // When the page loads, if the width is less than 650px, hide the list view
     $(function () {
         if ($(window).width() < 650) {
             if (self.displayingList()) {

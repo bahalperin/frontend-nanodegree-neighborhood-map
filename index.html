@@ -29,7 +29,7 @@
   <ul class="filtered-places" data-bind="visible: filteredPlaces().length,
                                            foreach: {data: filteredPlaces, as: 'place'},
                                            css: {'list-view-hidden': !displayingList()}">
-    <li class="place" data-bind="click: function() { $root.selectPlace(place); }, 
+    <li class="place" data-bind="click: function() { $root.selectPlace(place); },
                                   css: {'chosen-place': $data === $root.chosenPlace()},
                                   attr: { id: place.id }">
       <div class="place-info">
@@ -38,7 +38,7 @@
       </div>
       <div class="photo-count">
         <i class="fa fa-instagram"></i>
-        <span data-bind="visible: !place.isGettingInstagrams(), 
+        <span data-bind="visible: !place.isGettingInstagrams(),
                            text: place.instagrams().length"></span>
         <i class="fa fa-refresh fa-spin" data-bind="visible: place.isGettingInstagrams()"></i>
       </div>
@@ -52,7 +52,7 @@
 
   <!-- Show clickable Instagram button there is a chosenPlace -->
   <div data-bind="if: chosenPlace">
-    <button id="instagram-button" class="center-x" data-bind="click: togglePhotoDisplay, 
+    <button id="instagram-button" class="center-x" data-bind="click: togglePhotoDisplay,
                                              disable: chosenPlace().instagrams().length === 0">
       <img src="images/instagram.png">
     </button>
@@ -67,7 +67,7 @@
   </div>
 
   <!-- Photo gallery that displays when Instagram button is clicked -->
-  <div class="backdrop" data-bind="if: chosenPhoto, 
+  <div class="backdrop" data-bind="if: chosenPhoto,
                                    visible: viewingPhotos()">
     <div class="photo-title">
       <h1 class="photo-place-name" data-bind="text: chosenPlace().name"></h1>
