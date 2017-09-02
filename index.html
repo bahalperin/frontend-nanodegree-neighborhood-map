@@ -12,86 +12,91 @@
 </head>
 
 <body>
-  <div id="map-canvas"></div>
-
-  <form class='search' data-bind="submit: search">
-    <input class="search-bar" data-bind="value: query" placeholder="Filter results by name or type" autofocus></input>
-    <button class="search-button" type="submit">
-      <i class="fa fa-search fa-2x fa-inverse"></i>
-    </button>
-  </form>
-
-  <button class="list-toggle" data-bind="click: toggleListDisplay,
-                                           css: {'small-list-toggle': !displayingList() }">
-    <i data-bind="css: {'fa-minus-square': displayingList(),
-                    'fa-plus-square': !displayingList() }" class="fa fa-2x fa-inverse"></i>
-  </button>
-  <ul class="filtered-places" data-bind="visible: filteredPlaces().length,
-                                           foreach: {data: filteredPlaces, as: 'place'},
-                                           css: {'list-view-hidden': !displayingList()}">
-    <li class="place" data-bind="click: function() { $root.selectPlace(place); },
-                                  css: {'chosen-place': $data === $root.chosenPlace()},
-                                  attr: { id: place.id }">
-      <div class="place-info">
-        <h4 data-bind="text: place.name"></h4>
-        <p data-bind="text: place.vicinity"></p>
-      </div>
-      <div class="photo-count">
-        <i class="fa fa-instagram"></i>
-        <span data-bind="visible: !place.isGettingInstagrams(),
-                           text: place.instagrams().length"></span>
-        <i class="fa fa-refresh fa-spin" data-bind="visible: place.isGettingInstagrams()"></i>
-      </div>
-    </li>
-  </ul>
-  <div class="no-results" data-bind="visible: filteredPlaces().length === 0,
-                                       css: {'list-view-hidden': !displayingList()}">
-    No results matched your search
+  <div data-bind="ifnot: accessToken">
+    <a data-bind="attr: { href: loginUrl }">Sign in with Instagram</a>
   </div>
+  <div data-bind="if: accessToken">
+    <div id="map-canvas"></div>
 
+    <form class='search' data-bind="submit: search">
+      <input class="search-bar" data-bind="value: query" placeholder="Filter results by name or type" autofocus></input>
+      <button class="search-button" type="submit">
+        <i class="fa fa-search fa-2x fa-inverse"></i>
+      </button>
+    </form>
 
-  <!-- Show clickable Instagram button there is a chosenPlace -->
-  <div data-bind="if: chosenPlace">
-    <button id="instagram-button" class="center-x" data-bind="click: togglePhotoDisplay,
-                                             disable: chosenPlace().instagrams().length === 0">
-      <img src="images/instagram.png">
+    <button class="list-toggle" data-bind="click: toggleListDisplay,
+                                             css: {'small-list-toggle': !displayingList() }">
+      <i data-bind="css: {'fa-minus-square': displayingList(),
+                      'fa-plus-square': !displayingList() }" class="fa fa-2x fa-inverse"></i>
     </button>
-    <p class="photo-status center-x" data-bind="text: getInstagramStatus"></p>
-  </div>
-  <!-- Show faded disabled Instagram button if there is no chosenPlace -->
-  <div data-bind="ifnot: chosenPlace">
-    <button id="instagram-button" class="center-x" disabled>
-      <img src="images/instagram.png">
-    </button>
-    <p class="photo-status center-x">Please select a location to view Instagrams</p>
-  </div>
-
-  <!-- Photo gallery that displays when Instagram button is clicked -->
-  <div class="backdrop" data-bind="if: chosenPhoto,
-                                   visible: viewingPhotos()">
-    <div class="photo-title">
-      <h1 class="photo-place-name" data-bind="text: chosenPlace().name"></h1>
-      <h3 class="photo-loc" data-bind="text: chosenPlace().vicinity"></h3>
+    <ul class="filtered-places" data-bind="visible: filteredPlaces().length,
+                                             foreach: {data: filteredPlaces, as: 'place'},
+                                             css: {'list-view-hidden': !displayingList()}">
+      <li class="place" data-bind="click: function() { $root.selectPlace(place); },
+                                    css: {'chosen-place': $data === $root.chosenPlace()},
+                                    attr: { id: place.id }">
+        <div class="place-info">
+          <h4 data-bind="text: place.name"></h4>
+          <p data-bind="text: place.vicinity"></p>
+        </div>
+        <div class="photo-count">
+          <i class="fa fa-instagram"></i>
+          <span data-bind="visible: !place.isGettingInstagrams(),
+                             text: place.instagrams().length"></span>
+          <i class="fa fa-refresh fa-spin" data-bind="visible: place.isGettingInstagrams()"></i>
+        </div>
+      </li>
+    </ul>
+    <div class="no-results" data-bind="visible: filteredPlaces().length === 0,
+                                         css: {'list-view-hidden': !displayingList()}">
+      No results matched your search
     </div>
-    <div class="photo-wrapper" data-bind="style: {height: photoDimension(),
-                                          width: photoDimension() }">
-      <img class="photo-displayed" data-bind="attr:
-                      {src: chosenPhoto().images.standard_resolution.url}">
-      <p class="photo-caption center-x" data-bind="visible: captionText,
-                                          text: captionText,
-                                          style: {opacity: captionOpacity}"></p>
+
+
+    <!-- Show clickable Instagram button there is a chosenPlace -->
+    <div data-bind="if: chosenPlace">
+      <button id="instagram-button" class="center-x" data-bind="click: togglePhotoDisplay,
+                                               disable: chosenPlace().instagrams().length === 0">
+        <img src="images/instagram.png">
+      </button>
+      <p class="photo-status center-x" data-bind="text: getInstagramStatus"></p>
     </div>
-    <i class="fa fa-comment fa-inverse fa-3x comment-toggle center-x" data-bind="click: toggleCaption"></i>
-    <i class="fa fa-close fa-2x fa-inverse close" data-bind="click: togglePhotoDisplay"></i>
-    <i class="fa fa-arrow-circle-o-right fa-3x next-photo" data-bind="click: nextPhoto"></i>
-    <i class="fa fa-arrow-circle-o-left fa-3x previous-photo" data-bind="click: prevPhoto"></i>
-    <a class="photo-website" data-bind="attr: {href: chosenPhoto().link}" target="_blank">
-      <i class="fa fa-external-link fa-inverse fa-3x"></i>
-    </a>
-    <div class="photo-gallery-position">
-      <span data-bind="text: chosenPhotoViewableIndex"></span>
-      /
-      <span data-bind="text: chosenPlace().instagrams().length"></span>
+    <!-- Show faded disabled Instagram button if there is no chosenPlace -->
+    <div data-bind="ifnot: chosenPlace">
+      <button id="instagram-button" class="center-x" disabled>
+        <img src="images/instagram.png">
+      </button>
+      <p class="photo-status center-x">Please select a location to view Instagrams</p>
+    </div>
+
+    <!-- Photo gallery that displays when Instagram button is clicked -->
+    <div class="backdrop" data-bind="if: chosenPhoto,
+                                     visible: viewingPhotos()">
+      <div class="photo-title">
+        <h1 class="photo-place-name" data-bind="text: chosenPlace().name"></h1>
+        <h3 class="photo-loc" data-bind="text: chosenPlace().vicinity"></h3>
+      </div>
+      <div class="photo-wrapper" data-bind="style: {height: photoDimension(),
+                                            width: photoDimension() }">
+        <img class="photo-displayed" data-bind="attr:
+                        {src: chosenPhoto().images.standard_resolution.url}">
+        <p class="photo-caption center-x" data-bind="visible: captionText,
+                                            text: captionText,
+                                            style: {opacity: captionOpacity}"></p>
+      </div>
+      <i class="fa fa-comment fa-inverse fa-3x comment-toggle center-x" data-bind="click: toggleCaption"></i>
+      <i class="fa fa-close fa-2x fa-inverse close" data-bind="click: togglePhotoDisplay"></i>
+      <i class="fa fa-arrow-circle-o-right fa-3x next-photo" data-bind="click: nextPhoto"></i>
+      <i class="fa fa-arrow-circle-o-left fa-3x previous-photo" data-bind="click: prevPhoto"></i>
+      <a class="photo-website" data-bind="attr: {href: chosenPhoto().link}" target="_blank">
+        <i class="fa fa-external-link fa-inverse fa-3x"></i>
+      </a>
+      <div class="photo-gallery-position">
+        <span data-bind="text: chosenPhotoViewableIndex"></span>
+        /
+        <span data-bind="text: chosenPlace().instagrams().length"></span>
+      </div>
     </div>
   </div>
 

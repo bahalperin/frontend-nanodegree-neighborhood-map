@@ -5,6 +5,35 @@ function appViewModel() {
         infowindow,
         bounds;
 
+    var CLIENT_ID = '10c5b953e4c649d6934087752396e5a7';
+    var REDIRECT_URI = 'https://bahalperin.github.io/frontend-nanodegree-neighborhood-map';
+
+    self.loginUrl = 'https://api.instagram.com/oauth/authorize/?client_id=' + CLIENT_ID + '&redirect_uri=' + REDIRECT_URI + '&response_type=token';
+    self.accessToken = ko.observable();
+
+    function getAccessTokenFromHash() {
+      var accessTokenRegex = /access_token=(.+)/g;
+      var match = accessTokenRegex.exec(window.location.hash);
+
+      var accessToken;
+      if (
+        match
+        && match.length > 1
+      ) {
+        accessToken = match[1];
+      }
+
+      return accessToken;
+    }
+
+    $(window).bind('hashchange', function() {
+      self.accessToken(getAccessTokenFromHash());
+    });
+
+    $(document).ready(function() {
+      self.accessToken(getAccessTokenFromHash());
+    });
+
     // Map between values from getDayOfWeek function and string in Place's
     // open hours property.
     var dateMap = {
@@ -249,7 +278,7 @@ function appViewModel() {
 
             locIds.forEach(function (id) {
                 var mediaUrl = 'https://api.instagram.com/v1/locations/' + id +
-                    '/media/recent?access_token=' + accessToken;
+                    '/media/recent?access_token=' + self.accessToken();
                 promises.push(getPhotosById(mediaUrl));
             });
 
@@ -274,11 +303,10 @@ function appViewModel() {
             place.isGettingInstagrams(false);
         }, 5000);
 
-        var accessToken = '1582950873.10c5b95.cbfb0efc6d0d4242aec054371dfa8afe';
         var locationUrl = 'https://api.instagram.com/v1/locations/search?lat=' +
             place.geometry.location.lat() + '&lng=' +
             place.geometry.location.lng() + '&distance=50&access_token=' +
-            accessToken;
+            self.accessToken();
 
         // Get locations from Instagram near the input place's coordinates.
         var locationSearch = $.ajax({
